@@ -1,0 +1,777 @@
+te voy a a enviar algo que sirve : 
+proxy.php
+<?php
+// Proxy mejorado para streaming continuo de radio
+error_reporting(0); // Desactivar errores en producción
+ini_set('display_errors', 0);
+
+// URL de tu servidor de streaming (reemplaza con tu URL real)
+$streamUrl = "http://88.150.230.110:8950/stream"; // Cambia esto por tu URL real
+
+// Configurar headers ANTES de cualquier salida
+header("Content-Type: audio/mpeg");
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Range");
+header("Accept-Ranges: bytes");
+
+// Manejo de preflight requests (CORS)
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// Configuración para streaming continuo
+set_time_limit(0); // Sin límite de tiempo
+ini_set('memory_limit', '512M');
+ini_set('max_execution_time', 0);
+
+// Función para limpiar buffers
+function clearBuffers() {
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+}
+
+// Función para streaming de datos
+function streamAudioData($ch, $data) {
+    static $totalBytes = 0;
+    
+    // Verificar si la conexión sigue activa
+    if (connection_aborted()) {
+        return 0;
+    }
+    
+    // Enviar datos inmediatamente
+    echo $data;
+    
+    // Forzar envío
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+    } else {
+        if (ob_get_level()) {
+            ob_flush();
+        }
+        flush();
+    }
+    
+    $totalBytes += strlen($data);
+    
+    // Log cada MB para debug (opcional)
+    if ($totalBytes % (1024 * 1024) == 0) {
+        error_log("Streamed: " . ($totalBytes / (1024 * 1024)) . " MB");
+    }
+    
+    return strlen($data);
+}
+
+// Limpiar buffers existentes
+clearBuffers();
+
+// Inicializar cURL
+$ch = curl_init();
+
+// Configuración optimizada de cURL para streaming
+curl_setopt_array($ch, [
+    CURLOPT_URL => $streamUrl,
+    CURLOPT_HEADER => false,
+    CURLOPT_RETURNTRANSFER => false, // Streaming directo
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_MAXREDIRS => 3,
+    CURLOPT_WRITEFUNCTION => 'streamAudioData',
+    CURLOPT_BUFFERSIZE => 4096, // Buffer pequeño para menos latencia
+    CURLOPT_TCP_NODELAY => true,
+    CURLOPT_CONNECTTIMEOUT => 15,
+    CURLOPT_TIMEOUT => 0, // Sin timeout para streaming continuo
+    CURLOPT_LOW_SPEED_LIMIT => 1000, // Mínimo 1KB/s
+    CURLOPT_LOW_SPEED_TIME => 30, // Durante 30 segundos
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_SSL_VERIFYHOST => false,
+    CURLOPT_FRESH_CONNECT => true, // Forzar nueva conexión
+    CURLOPT_FORBID_REUSE => false, // Permitir reutilización
+]);
+
+// Headers para simular un navegador real
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept: audio/mpeg, audio/*, */*",
+    "Accept-Language: es-ES,es;q=0.9,en;q=0.8",
+    "Accept-Encoding: identity", // Sin compresión
+    "Connection: keep-alive",
+    "Icy-MetaData: 0", // Sin metadata
+    "Range: bytes=0-" // Para streaming
+]);
+
+// Manejo de señales para limpieza
+function signalHandler($signal) {
+    global $ch;
+    if ($ch) {
+        curl_close($ch);
+    }
+    exit(0);
+}
+
+if (function_exists('pcntl_signal')) {
+    pcntl_signal(SIGTERM, 'signalHandler');
+    pcntl_signal(SIGINT, 'signalHandler');
+}
+
+// Función de limpieza
+function cleanup() {
+    global $ch;
+    if ($ch) {
+        curl_close($ch);
+    }
+}
+register_shutdown_function('cleanup');
+
+// Ejecutar streaming
+$result = curl_exec($ch);
+
+// Manejo de errores
+if ($result === false) {
+    $error = curl_error($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
+    error_log("Stream Error - HTTP: $httpCode, cURL: $error");
+    
+    // Enviar error al cliente
+    http_response_code(502);
+    header("Content-Type: application/json");
+    echo json_encode([
+        'error' => 'Stream connection failed',
+        'details' => $error,
+        'http_code' => $httpCode
+    ]);
+}
+
+curl_close($ch);
+?>
+y el index
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioRias.com - Sitio en Construcción</title>
+    <meta name="description" content="RadioRias.com se está preparando. Sitio web en construcción.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="shortcut icon" href="LOGO RADIORIAS.enc" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #06b6d4, #0891b2);
+        }
+
+        .logo {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 4px 12px rgba(6, 182, 212, 0.2));
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #64748b;
+            margin-bottom: 40px;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .construction-icon {
+            font-size: 4rem;
+            margin-bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #06b6d4, #0891b2);
+            width: 75%;
+            border-radius: 4px;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.8;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .message {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        /* Estilos mejorados para el reproductor de radio */
+        .radio-player {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 40px 0;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .radio-player:hover {
+            border-color: #06b6d4;
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.15);
+        }
+
+        .radio-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .radio-subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .audio-player {
+            width: 100%;
+            height: 50px;
+            border-radius: 12px;
+            outline: none;
+            background: white;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .audio-player:focus {
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ef4444;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            animation: pulse-live 2s infinite;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes pulse-live {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Estilos para mensajes de estado */
+        .status-message {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-loading {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #d97706;
+        }
+
+        .status-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+        }
+
+        .status-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+        }
+
+        .status-reconnecting {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #2563eb;
+        }
+
+        .contact-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 30px;
+        }
+
+        .contact-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .contact-text {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .social-link {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #06b6d4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: #0891b2;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 40px 24px;
+                margin: 10px;
+            }
+
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .construction-icon {
+                font-size: 3rem;
+            }
+
+            .logo {
+                max-width: 250px;
+            }
+
+            .radio-player {
+                padding: 20px;
+                margin: 30px 0;
+            }
+
+            .radio-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-XVQ7Y5lBzMt66pZU1bQpwAwjajYXId.png" alt="RadioRias.com Logo" class="logo">
+        
+        <div class="construction-icon">🚧</div>
+        
+        <h1 class="main-title">¡Nos estamos preparando!</h1>
+        <p class="subtitle">Sitio web en construcción</p>
+        
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        
+        <p class="message">
+            Estamos trabajando duro para traerte la mejor experiencia de radio online. 
+            Muy pronto podrás disfrutar de toda nuestra programación y contenido exclusivo.
+        </p>
+        
+        <!-- Reproductor de radio mejorado -->
+        <div class="radio-player">
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                EN VIVO
+            </div>
+            <h3 class="radio-title">
+                <i class="fas fa-radio"></i>
+                Escucha RadioRías en vivo
+            </h3>
+            <p class="radio-subtitle">
+                Mientras preparamos nuestro nuevo sitio web, puedes seguir disfrutando de nuestra programación en directo.
+            </p>
+            
+            <!-- Mensajes de estado -->
+            <div class="status-message status-loading" id="statusLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                Conectando con la radio...
+            </div>
+            <div class="status-message status-success" id="statusSuccess">
+                <i class="fas fa-check-circle"></i>
+                Conectado - Reproduciendo en vivo
+            </div>
+            <div class="status-message status-error" id="statusError">
+                <i class="fas fa-exclamation-triangle"></i>
+                Error de conexión. Reintentando automáticamente...
+            </div>
+            <div class="status-message status-reconnecting" id="statusReconnecting">
+                <i class="fas fa-sync fa-spin"></i>
+                Reconectando... Intento <span id="reconnectCount">1</span>
+            </div>
+            
+            <audio controls class="audio-player" id="radioPlayer" preload="none">
+                <source src="proxy.php" type="audio/mpeg">
+                Tu navegador no soporta el reproductor de audio.
+            </audio>
+        </div>
+        
+        <div class="contact-info">
+            <h3 class="contact-title">¿Tienes alguna pregunta?</h3>
+            <p class="contact-text">
+                Mientras tanto, puedes contactarnos para cualquier consulta o información adicional.
+            </p>
+        </div>
+        
+        <div class="social-links">
+            <a href="https://www.facebook.com/rmorrazo" class="social-link" title="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="mailto:webradiomorrazo@gmail.com" class="social-link" title="Email"><i class="fas fa-envelope"></i></a>
+            <a href="https://www.instagram.com/radiomorrazo" class="social-link" title="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="tel:+34986123456" class="social-link" title="Teléfono"><i class="fas fa-phone"></i></a>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 RadioRias.com - Todos los derechos reservados</p>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de reconexión automática mejorado
+        class RadioStreamManager {
+            constructor() {
+                this.audioPlayer = document.getElementById('radioPlayer');
+                this.statusLoading = document.getElementById('statusLoading');
+                this.statusSuccess = document.getElementById('statusSuccess');
+                this.statusError = document.getElementById('statusError');
+                this.statusReconnecting = document.getElementById('statusReconnecting');
+                this.reconnectCount = document.getElementById('reconnectCount');
+                
+                this.maxReconnectAttempts = 10;
+                this.currentReconnectAttempt = 0;
+                this.reconnectTimeout = null;
+                this.isPlaying = false;
+                this.wasPlayingBeforeError = false;
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                console.log('[RadioRias] Sistema de streaming inicializado');
+            }
+            
+            setupEventListeners() {
+                // Eventos de carga
+                this.audioPlayer.addEventListener('loadstart', () => {
+                    console.log('[RadioRias] Iniciando carga del stream');
+                    this.showStatus('loading');
+                });
+                
+                this.audioPlayer.addEventListener('canplay', () => {
+                    console.log('[RadioRias] Stream listo para reproducir');
+                    this.showStatus('success');
+                    this.currentReconnectAttempt = 0;
+                });
+                
+                this.audioPlayer.addEventListener('play', () => {
+                    console.log('[RadioRias] Reproducción iniciada');
+                    this.isPlaying = true;
+                    this.showStatus('success');
+                });
+                
+                this.audioPlayer.addEventListener('pause', () => {
+                    console.log('[RadioRias] Reproducción pausada');
+                    this.isPlaying = false;
+                });
+                
+                // Eventos de error
+                this.audioPlayer.addEventListener('error', (e) => {
+                    console.error('[RadioRias] Error en el reproductor:', e);
+                    this.handleError();
+                });
+                
+                this.audioPlayer.addEventListener('stalled', () => {
+                    console.warn('[RadioRias] Stream interrumpido');
+                    this.handleError();
+                });
+                
+                this.audioPlayer.addEventListener('suspend', () => {
+                    console.warn('[RadioRias] Stream suspendido');
+                    if (this.isPlaying) {
+                        this.handleError();
+                    }
+                });
+                
+                // Evento de fin (no debería ocurrir en streaming)
+                this.audioPlayer.addEventListener('ended', () => {
+                    console.warn('[RadioRias] Stream terminado inesperadamente');
+                    this.handleError();
+                });
+                
+                // Detectar cuando se reanuda la reproducción después de un error
+                this.audioPlayer.addEventListener('playing', () => {
+                    console.log('[RadioRias] Reproducción reanudada');
+                    this.showStatus('success');
+                    this.currentReconnectAttempt = 0;
+                });
+            }
+            
+            showStatus(type) {
+                // Ocultar todos los mensajes
+                this.statusLoading.style.display = 'none';
+                this.statusSuccess.style.display = 'none';
+                this.statusError.style.display = 'none';
+                this.statusReconnecting.style.display = 'none';
+                
+                // Mostrar el mensaje apropiado
+                switch(type) {
+                    case 'loading':
+                        this.statusLoading.style.display = 'flex';
+                        break;
+                    case 'success':
+                        this.statusSuccess.style.display = 'flex';
+                        break;
+                    case 'error':
+                        this.statusError.style.display = 'flex';
+                        break;
+                    case 'reconnecting':
+                        this.statusReconnecting.style.display = 'flex';
+                        this.reconnectCount.textContent = this.currentReconnectAttempt;
+                        break;
+                }
+            }
+            
+            handleError() {
+                this.wasPlayingBeforeError = this.isPlaying;
+                this.isPlaying = false;
+                
+                if (this.currentReconnectAttempt < this.maxReconnectAttempts) {
+                    this.currentReconnectAttempt++;
+                    console.log(`[RadioRias] Intento de reconexión ${this.currentReconnectAttempt}/${this.maxReconnectAttempts}`);
+                    
+                    this.showStatus('reconnecting');
+                    
+                    // Limpiar timeout anterior si existe
+                    if (this.reconnectTimeout) {
+                        clearTimeout(this.reconnectTimeout);
+                    }
+                    
+                    // Calcular delay exponencial (1s, 2s, 4s, 8s, max 30s)
+                    const delay = Math.min(1000 * Math.pow(2, this.currentReconnectAttempt - 1), 30000);
+                    
+                    this.reconnectTimeout = setTimeout(() => {
+                        this.reconnect();
+                    }, delay);
+                } else {
+                    console.error('[RadioRias] Máximo número de intentos de reconexión alcanzado');
+                    this.showStatus('error');
+                }
+            }
+            
+            reconnect() {
+                console.log('[RadioRias] Intentando reconectar...');
+                
+                // Crear nueva URL con timestamp para evitar cache
+                const timestamp = new Date().getTime();
+                const newSrc = `proxy.php?t=${timestamp}`;
+                
+                // Recargar el source
+                this.audioPlayer.src = newSrc;
+                this.audioPlayer.load();
+                
+                // Si estaba reproduciendo antes del error, intentar reproducir automáticamente
+                if (this.wasPlayingBeforeError) {
+                    setTimeout(() => {
+                        this.audioPlayer.play().catch(e => {
+                            console.warn('[RadioRias] No se pudo reproducir automáticamente:', e);
+                        });
+                    }, 1000);
+                }
+            }
+            
+            // Método público para reiniciar manualmente
+            restart() {
+                console.log('[RadioRias] Reinicio manual del stream');
+                this.currentReconnectAttempt = 0;
+                this.reconnect();
+            }
+        }
+        
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            window.radioManager = new RadioStreamManager();
+            
+            // Agregar botón de reinicio manual (opcional)
+            const radioPlayer = document.querySelector('.radio-player');
+            const restartButton = document.createElement('button');
+            restartButton.innerHTML = '<i class="fas fa-redo"></i> Reiniciar Stream';
+            restartButton.style.cssText = `
+                background: #06b6d4;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                cursor: pointer;
+                margin-top: 10px;
+                transition: background 0.3s ease;
+            `;
+            restartButton.addEventListener('mouseover', () => {
+                restartButton.style.background = '#0891b2';
+            });
+            restartButton.addEventListener('mouseout', () => {
+                restartButton.style.background = '#06b6d4';
+            });
+            restartButton.addEventListener('click', () => {
+                window.radioManager.restart();
+            });
+            
+            radioPlayer.appendChild(restartButton);
+        });
+        
+        // Detectar cuando la página se vuelve visible (para reconectar si es necesario)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden && window.radioManager) {
+                console.log('[RadioRias] Página visible, verificando conexión');
+                // Pequeño delay para verificar si el stream sigue funcionando
+                setTimeout(() => {
+                    const audio = window.radioManager.audioPlayer;
+                    if (audio.paused && window.radioManager.wasPlayingBeforeError) {
+                        console.log('[RadioRias] Reconectando después de cambio de visibilidad');
+                        window.radioManager.reconnect();
+                    }
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
+

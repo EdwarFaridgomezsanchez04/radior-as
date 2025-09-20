@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Favicons PNG - RadioRías</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .favicon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .favicon-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+        .favicon-item canvas {
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .download-btn {
+            background: linear-gradient(135deg, #14b8a6, #06b6d4);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+        }
+        h1 {
+            color: #14b8a6;
+            margin-bottom: 30px;
+        }
+        .instructions {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+        .instructions h3 {
+            color: #92400e;
+            margin-top: 0;
+        }
+        .instructions p {
+            color: #92400e;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Generador de Favicons PNG - RadioRías</h1>
+        
+        <div class="instructions">
+            <h3>📋 Instrucciones:</h3>
+            <p>Haz clic en cada botón "Descargar" para generar y descargar el favicon en el tamaño correspondiente. 
+            Guarda cada archivo en la carpeta <code>assets/images/</code> con el nombre indicado.</p>
+        </div>
+        
+        <div class="favicon-grid">
+            <div class="favicon-item">
+                <h3>16x16px</h3>
+                <canvas id="favicon-16" width="16" height="16"></canvas>
+                <br>
+                <button class="download-btn" onclick="downloadFavicon('favicon-16', 'favicon-16x16.png')">
+                    Descargar favicon-16x16.png
+                </button>
+            </div>
+            
+            <div class="favicon-item">
+                <h3>32x32px</h3>
+                <canvas id="favicon-32" width="32" height="32"></canvas>
+                <br>
+                <button class="download-btn" onclick="downloadFavicon('favicon-32', 'favicon-32x32.png')">
+                    Descargar favicon-32x32.png
+                </button>
+            </div>
+            
+            <div class="favicon-item">
+                <h3>180x180px</h3>
+                <canvas id="favicon-180" width="180" height="180"></canvas>
+                <br>
+                <button class="download-btn" onclick="downloadFavicon('favicon-180', 'apple-touch-icon.png')">
+                    Descargar apple-touch-icon.png
+                </button>
+            </div>
+            
+            <div class="favicon-item">
+                <h3>192x192px</h3>
+                <canvas id="favicon-192" width="192" height="192"></canvas>
+                <br>
+                <button class="download-btn" onclick="downloadFavicon('favicon-192', 'favicon-192x192.png')">
+                    Descargar favicon-192x192.png
+                </button>
+            </div>
+            
+            <div class="favicon-item">
+                <h3>512x512px</h3>
+                <canvas id="favicon-512" width="512" height="512"></canvas>
+                <br>
+                <button class="download-btn" onclick="downloadFavicon('favicon-512', 'favicon-512x512.png')">
+                    Descargar favicon-512x512.png
+                </button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>✅ Después de descargar:</h3>
+            <p>1. Guarda todos los archivos en la carpeta <code>assets/images/</code><br>
+            2. El favicon ya está configurado en todas las páginas del sitio<br>
+            3. Recarga el navegador para ver el nuevo favicon redondeado</p>
+        </div>
+    </div>
+
+    <script>
+        // Función para dibujar el favicon en diferentes tamaños
+        function drawFavicon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Limpiar canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Crear gradiente
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#14b8a6');
+            gradient.addColorStop(1, '#06b6d4');
+            
+            // Dibujar fondo redondeado
+            const cornerRadius = size * 0.25; // 25% del tamaño para esquinas redondeadas
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, cornerRadius);
+            ctx.fill();
+            
+            // Escalar elementos según el tamaño
+            const scale = size / 32;
+            const centerX = size / 2;
+            const centerY = size / 2;
+            
+            // Dibujar torre de radio
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            
+            // Base de la torre
+            const baseWidth = 4 * scale;
+            const baseHeight = 2 * scale;
+            const baseX = centerX - baseWidth / 2;
+            const baseY = centerY + 6 * scale;
+            ctx.fillRect(baseX, baseY, baseWidth, baseHeight);
+            
+            // Torre principal
+            const towerWidth = 2 * scale;
+            const towerHeight = 14 * scale;
+            const towerX = centerX - towerWidth / 2;
+            const towerY = centerY - 4 * scale;
+            ctx.fillRect(towerX, towerY, towerWidth, towerHeight);
+            
+            // Antena superior
+            const antennaWidth = 1 * scale;
+            const antennaHeight = 2 * scale;
+            const antennaX = centerX - antennaWidth / 2;
+            const antennaY = centerY - 6 * scale;
+            ctx.fillRect(antennaX, antennaY, antennaWidth, antennaHeight);
+            
+            // Ondas de radio
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 1 * scale;
+            
+            // Onda 1
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3 * scale, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Onda 2
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5 * scale, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Onda 3
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 7 * scale, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Puntos de señal
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            const dotRadius = 0.5 * scale;
+            
+            // Puntos alrededor de la torre
+            const dots = [
+                {x: centerX - 2 * scale, y: centerY - 2 * scale},
+                {x: centerX + 2 * scale, y: centerY - 2 * scale},
+                {x: centerX - 2 * scale, y: centerY + 2 * scale},
+                {x: centerX + 2 * scale, y: centerY + 2 * scale}
+            ];
+            
+            dots.forEach(dot => {
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, dotRadius, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+        }
+        
+        // Función para descargar el favicon
+        function downloadFavicon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            
+            // Convertir canvas a blob para mejor compatibilidad
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = url;
+                
+                // Agregar al DOM temporalmente para asegurar la descarga
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Limpiar el objeto URL
+                URL.revokeObjectURL(url);
+                
+                // Mostrar mensaje de éxito
+                alert(`Favicon ${filename} descargado exitosamente!`);
+            }, 'image/png');
+        }
+        
+        // Dibujar todos los favicons al cargar la página
+        window.onload = function() {
+            drawFavicon('favicon-16', 16);
+            drawFavicon('favicon-32', 32);
+            drawFavicon('favicon-180', 180);
+            drawFavicon('favicon-192', 192);
+            drawFavicon('favicon-512', 512);
+        };
+    </script>
+</body>
+</html>

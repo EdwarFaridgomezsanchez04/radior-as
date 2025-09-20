@@ -1,0 +1,33 @@
+{
+    "name": "RadioRías - La voz de la península de Morrazo",
+    "short_name": "RadioRías",
+    "description": "La voz del corazón de Galicia. Radio en vivo desde la península de Morrazo.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f0fdfa",
+    "theme_color": "#14b8a6",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "assets/images/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "assets/images/favicon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/images/favicon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ],
+    "categories": ["entertainment", "music", "radio"],
+    "lang": "es",
+    "dir": "ltr"
+}

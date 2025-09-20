@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración de Favicon - RadioRías</title>
+    
+    <!-- Favicon completo para todos los navegadores -->
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0fdfa 0%, #ecfeff 100%);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .favicon-preview {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        .favicon-size {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        h1 {
+            color: #14b8a6;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #334155;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Configuración de Favicon Redondeado - RadioRías</h1>
+        
+        <h2>📱 Vista Previa de Favicons</h2>
+        <div class="favicon-preview">
+            <img src="assets/images/favicon.svg" alt="Favicon SVG" width="32" height="32">
+            <span>SVG (32x32) - Navegadores modernos</span>
+            <span class="status success">✅ Redondeado</span>
+        </div>
+        
+        <div class="favicon-preview">
+            <img src="favicon.ico" alt="Favicon ICO" width="32" height="32">
+            <span>ICO (32x32) - Compatibilidad universal</span>
+            <span class="status success">✅ Redondeado</span>
+        </div>
+        
+        <h2>🔧 Código HTML para Incluir en Todas las Páginas</h2>
+        <div class="code-block">
+&lt;!-- Favicon completo para todos los navegadores --&gt;
+&lt;link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg"&gt;
+&lt;link rel="icon" type="image/x-icon" href="favicon.ico"&gt;
+&lt;link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png"&gt;
+&lt;link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png"&gt;
+&lt;link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png"&gt;
+&lt;link rel="manifest" href="site.webmanifest"&gt;
+        </div>
+        
+        <h2>📋 Características del Favicon</h2>
+        <ul>
+            <li><strong>Diseño:</strong> Torre de transmisión con ondas de radio</li>
+            <li><strong>Colores:</strong> Gradiente teal-cyan (#14b8a6 → #06b6d4)</li>
+            <li><strong>Forma:</strong> Redondeado con esquinas de 8px</li>
+            <li><strong>Estilo:</strong> Minimalista y moderno</li>
+            <li><strong>Compatibilidad:</strong> SVG + ICO para todos los navegadores</li>
+        </ul>
+        
+        <h2>🚀 Próximos Pasos</h2>
+        <ol>
+            <li>Incluir el código HTML en todas las páginas del sitio</li>
+            <li>Crear versiones PNG adicionales si es necesario</li>
+            <li>Crear archivo manifest.json para PWA</li>
+            <li>Probar en diferentes navegadores y dispositivos</li>
+        </ol>
+    </div>
+</body>
+</html>
