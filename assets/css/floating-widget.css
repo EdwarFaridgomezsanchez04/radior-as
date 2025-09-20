@@ -634,6 +634,44 @@
         width: 24px;
         height: 24px;
     }
+    
+    /* Mejoras específicas para móvil */
+    .floating-widget {
+        max-width: calc(100vw - 20px);
+        min-width: 280px;
+    }
+    
+    .widget-controls-compact {
+        gap: 16px;
+        justify-content: space-around;
+    }
+    
+    .volume-control-compact {
+        flex: 1;
+        max-width: 120px;
+    }
+    
+    .volume-slider-compact {
+        width: 100%;
+        min-width: 80px;
+    }
+    
+    /* Mejor área de toque para el botón de cerrar */
+    .close-btn {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 12px;
+    }
+    
+    /* Prevenir zoom en dispositivos iOS */
+    .floating-widget * {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
 }
 
 /* Animación de carga */

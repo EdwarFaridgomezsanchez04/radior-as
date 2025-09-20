@@ -33,24 +33,38 @@
                 </div>
 
                 <!-- Mobile menu button -->
-                <button onclick="toggleMobileMenu()" class="md:hidden p-2 sm:p-3 rounded-xl text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition-all duration-300">
-                    <i class="fas fa-bars text-lg sm:text-xl"></i>
+                <button id="mobile-menu-button" onclick="toggleMobileMenu()" class="md:hidden p-3 rounded-xl text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition-all duration-300 relative z-50">
+                    <i class="fas fa-bars text-lg hamburger-icon"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Navigation -->
-        <div id="mobile-menu" class="mobile-menu py-4 border-t border-white border-opacity-20 hidden">
-            <div class="flex flex-col space-y-2">
-                <a href="<?php echo url('home'); ?>" class="text-slate-700 hover:text-radio-teal px-4 py-3 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 <?php echo $page === 'home' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>"><?php echo $t['nav']['home']; ?></a>
-                <!-- <a href="<?php echo url('programs'); ?>" class="text-slate-700 hover:text-radio-teal px-4 py-3 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 <?php echo $page === 'programs' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>"><?php echo $t['nav']['programs']; ?></a> -->
-                <a href="<?php echo url('about'); ?>" class="text-slate-700 hover:text-radio-teal px-4 py-3 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 <?php echo $page === 'about' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>"><?php echo $t['nav']['about']; ?></a>
-                <!-- <a href="<?php echo url('podcasts'); ?>" class="text-slate-700 hover:text-radio-teal px-4 py-3 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 <?php echo $page === 'podcasts' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>"><?php echo $t['nav']['podcasts']; ?></a> -->
-                <!-- <a href="<?php echo url('audiobooks'); ?>" class="text-slate-700 hover:text-radio-teal px-4 py-3 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 <?php echo $page === 'audiobooks' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>"><?php echo $t['nav']['audiobooks']; ?></a> -->
-                <a href="<?php echo url('contact'); ?>" class="text-slate-700 hover:text-radio-teal px-4 py-3 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 <?php echo $page === 'contact' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>"><?php echo $t['nav']['contact']; ?></a>
-                <!-- <a href="login.php" class="text-slate-700 hover:text-radio-teal px-4 py-3 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 flex items-center">
-                    <i class="fas fa-user-shield mr-2"></i><?php echo $t['nav']['admin']; ?>
-                </a> -->
+        <div id="mobile-menu" class="mobile-menu fixed inset-x-0 top-16 bg-white shadow-xl border-t border-slate-200 z-40 hidden">
+            <div class="max-w-7xl mx-auto px-4 py-6">
+                <div class="flex flex-col space-y-1">
+                    <a href="<?php echo url('home'); ?>" class="mobile-nav-link text-slate-700 hover:text-radio-teal px-4 py-4 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 flex items-center <?php echo $page === 'home' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>">
+                        <i class="fas fa-home w-6 mr-3 text-center"></i>
+                        <?php echo $t['nav']['home']; ?>
+                    </a>
+                    <a href="<?php echo url('about'); ?>" class="mobile-nav-link text-slate-700 hover:text-radio-teal px-4 py-4 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 flex items-center <?php echo $page === 'about' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>">
+                        <i class="fas fa-users w-6 mr-3 text-center"></i>
+                        <?php echo $t['nav']['about']; ?>
+                    </a>
+                    <a href="<?php echo url('contact'); ?>" class="mobile-nav-link text-slate-700 hover:text-radio-teal px-4 py-4 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 flex items-center <?php echo $page === 'contact' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>">
+                        <i class="fas fa-envelope w-6 mr-3 text-center"></i>
+                        <?php echo $t['nav']['contact']; ?>
+                    </a>
+                </div>
+                
+                <!-- Language Toggle Mobile -->
+                <div class="mt-6 pt-6 border-t border-slate-200">
+                    <p class="text-sm font-semibold text-slate-500 mb-3">Idioma / Language</p>
+                    <div class="flex space-x-2">
+                        <a href="<?php echo url($page, 'es'); ?>" class="flex-1 px-4 py-3 rounded-lg text-center font-bold transition-all duration-300 <?php echo $lang === 'es' ? 'bg-radio-teal text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'; ?>">Español</a>
+                        <a href="<?php echo url($page, 'gl'); ?>" class="flex-1 px-4 py-3 rounded-lg text-center font-bold transition-all duration-300 <?php echo $lang === 'gl' ? 'bg-radio-teal text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'; ?>">Galego</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

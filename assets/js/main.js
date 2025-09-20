@@ -3,7 +3,26 @@
 // Mobile Menu Toggle
 function toggleMobileMenu() {
   const menu = document.getElementById("mobile-menu")
-  menu.classList.toggle("hidden")
+  const button = document.getElementById("mobile-menu-button")
+  const hamburgerIcon = button.querySelector(".hamburger-icon")
+  
+  if (menu.classList.contains("hidden")) {
+    // Mostrar menú
+    menu.classList.remove("hidden")
+    setTimeout(() => {
+      menu.classList.add("show")
+    }, 10)
+    hamburgerIcon.classList.add("active")
+    document.body.style.overflow = "hidden" // Prevenir scroll
+  } else {
+    // Ocultar menú
+    menu.classList.remove("show")
+    hamburgerIcon.classList.remove("active")
+    document.body.style.overflow = "" // Restaurar scroll
+    setTimeout(() => {
+      menu.classList.add("hidden")
+    }, 300)
+  }
 }
 
 // Smooth scrolling for anchor links
@@ -23,10 +42,39 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   // Close mobile menu when clicking on links
-  document.querySelectorAll("#mobile-menu a").forEach((link) => {
+  document.querySelectorAll(".mobile-nav-link").forEach((link) => {
     link.addEventListener("click", () => {
-      document.getElementById("mobile-menu").classList.add("hidden")
+      const menu = document.getElementById("mobile-menu")
+      const button = document.getElementById("mobile-menu-button")
+      const hamburgerIcon = button.querySelector(".hamburger-icon")
+      
+      menu.classList.remove("show")
+      hamburgerIcon.classList.remove("active")
+      document.body.style.overflow = ""
+      setTimeout(() => {
+        menu.classList.add("hidden")
+      }, 300)
     })
+  })
+
+  // Close mobile menu when clicking outside
+  document.addEventListener("click", (e) => {
+    const menu = document.getElementById("mobile-menu")
+    const button = document.getElementById("mobile-menu-button")
+    
+    if (!menu.contains(e.target) && !button.contains(e.target) && !menu.classList.contains("hidden")) {
+      toggleMobileMenu()
+    }
+  })
+
+  // Close mobile menu on escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const menu = document.getElementById("mobile-menu")
+      if (!menu.classList.contains("hidden")) {
+        toggleMobileMenu()
+      }
+    }
   })
 
   // Initialize scroll animations

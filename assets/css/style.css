@@ -466,11 +466,94 @@ body {
     to { transform: rotate(360deg); }
 }
 
+/* Hamburger Menu Animation */
+.hamburger-icon {
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.hamburger-icon.active {
+    transform: rotate(90deg);
+    color: #14b8a6;
+}
+
 /* Mobile Menu Improvements */
 .mobile-menu {
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.mobile-menu.show {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .mobile-menu.hidden {
     display: none;
+}
+
+/* Mobile Navigation Links */
+.mobile-nav-link {
+    min-height: 56px;
+    font-size: 16px;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.mobile-nav-link:active {
+    transform: scale(0.98);
+}
+
+.mobile-nav-link i {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.mobile-nav-link:hover i {
+    opacity: 1;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+    /* Larger touch targets */
+    button, a {
+        min-height: 48px;
+        min-width: 48px;
+    }
+    
+    /* Better spacing */
+    .px-4 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+    
+    .py-3 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
+    /* Improved text sizes */
+    .text-sm {
+        font-size: 16px;
+    }
+    
+    /* Prevent zoom on focus */
+    input, textarea, select {
+        font-size: 16px !important;
+    }
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    body {
+        -webkit-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
 }
