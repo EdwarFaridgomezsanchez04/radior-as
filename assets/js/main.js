@@ -4,24 +4,35 @@
 function toggleMobileMenu() {
   const menu = document.getElementById("mobile-menu")
   const button = document.getElementById("mobile-menu-button")
-  const hamburgerIcon = button.querySelector(".hamburger-icon")
+  const hamburgerIcon = button?.querySelector(".hamburger-icon")
   
-  if (menu.classList.contains("hidden")) {
+  console.log("Toggle menu clicked", {menu, button, hamburgerIcon}); // Debug
+  
+  if (!menu) {
+    console.error("Menu not found!")
+    return
+  }
+  
+  const isHidden = menu.classList.contains("hidden")
+  
+  if (isHidden) {
     // Mostrar menú
     menu.classList.remove("hidden")
     setTimeout(() => {
       menu.classList.add("show")
-    }, 10)
-    hamburgerIcon.classList.add("active")
-    document.body.style.overflow = "hidden" // Prevenir scroll
+    }, 50)
+    hamburgerIcon?.classList.add("active")
+    document.body.style.overflow = "hidden"
+    console.log("Menu shown")
   } else {
     // Ocultar menú
     menu.classList.remove("show")
-    hamburgerIcon.classList.remove("active")
-    document.body.style.overflow = "" // Restaurar scroll
+    hamburgerIcon?.classList.remove("active")
+    document.body.style.overflow = ""
     setTimeout(() => {
       menu.classList.add("hidden")
     }, 300)
+    console.log("Menu hidden")
   }
 }
 
@@ -49,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const hamburgerIcon = button.querySelector(".hamburger-icon")
       
       menu.classList.remove("show")
-      hamburgerIcon.classList.remove("active")
+      if (hamburgerIcon) hamburgerIcon.classList.remove("active")
       document.body.style.overflow = ""
       setTimeout(() => {
         menu.classList.add("hidden")
