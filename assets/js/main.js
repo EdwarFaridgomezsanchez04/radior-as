@@ -1,37 +1,73 @@
 // Main JavaScript functionality for Radio Rías
 
-// Mobile Menu Toggle
+// Mobile Menu Toggle - Compatible con todos los navegadores
 function toggleMobileMenu() {
-  const menu = document.getElementById("mobile-menu")
-  const button = document.getElementById("mobile-menu-button")
-  const hamburgerIcon = button?.querySelector(".hamburger-icon")
+  var menu = document.getElementById("mobile-menu")
+  var button = document.getElementById("mobile-menu-button")
+  var hamburgerIcon = button ? button.querySelector(".hamburger-icon") : null
   
-  console.log("Toggle menu clicked", {menu, button, hamburgerIcon}); // Debug
+  console.log("Toggle menu clicked", menu, button, hamburgerIcon); // Debug
   
   if (!menu) {
     console.error("Menu not found!")
     return
   }
   
-  const isHidden = menu.classList.contains("hidden")
+  // Verificar si el menú está oculto usando múltiples métodos
+  var isHidden = menu.classList.contains("hidden") || menu.style.display === "none"
   
   if (isHidden) {
     // Mostrar menú
-    menu.classList.remove("hidden")
-    setTimeout(() => {
-      menu.classList.add("show")
-    }, 50)
-    hamburgerIcon?.classList.add("active")
+    if (menu.classList) {
+      menu.classList.remove("hidden")
+    }
+    menu.style.display = "block"
+    menu.style.opacity = "1"
+    
+    // Usar setTimeout solo si está disponible
+    if (window.setTimeout) {
+      setTimeout(function() {
+        if (menu.classList) {
+          menu.classList.add("show")
+        }
+      }, 50)
+    } else {
+      if (menu.classList) {
+        menu.classList.add("show")
+      }
+    }
+    
+    if (hamburgerIcon && hamburgerIcon.classList) {
+      hamburgerIcon.classList.add("active")
+    }
     document.body.style.overflow = "hidden"
     console.log("Menu shown")
   } else {
     // Ocultar menú
-    menu.classList.remove("show")
-    hamburgerIcon?.classList.remove("active")
+    if (menu.classList) {
+      menu.classList.remove("show")
+    }
+    menu.style.opacity = "0"
+    
+    if (hamburgerIcon && hamburgerIcon.classList) {
+      hamburgerIcon.classList.remove("active")
+    }
     document.body.style.overflow = ""
-    setTimeout(() => {
-      menu.classList.add("hidden")
-    }, 300)
+    
+    // Usar setTimeout solo si está disponible
+    if (window.setTimeout) {
+      setTimeout(function() {
+        if (menu.classList) {
+          menu.classList.add("hidden")
+        }
+        menu.style.display = "none"
+      }, 300)
+    } else {
+      if (menu.classList) {
+        menu.classList.add("hidden")
+      }
+      menu.style.display = "none"
+    }
     console.log("Menu hidden")
   }
 }
@@ -53,36 +89,41 @@ document.addEventListener("DOMContentLoaded", () => {
   })
 
   // Close mobile menu when clicking on links
-  document.querySelectorAll(".mobile-nav-link").forEach((link) => {
-    link.addEventListener("click", () => {
-      const menu = document.getElementById("mobile-menu")
-      const button = document.getElementById("mobile-menu-button")
-      const hamburgerIcon = button.querySelector(".hamburger-icon")
+  var mobileLinks = document.querySelectorAll(".mobile-nav-link")
+  for (var i = 0; i < mobileLinks.length; i++) {
+    mobileLinks[i].addEventListener("click", function() {
+      var menu = document.getElementById("mobile-menu")
+      var button = document.getElementById("mobile-menu-button")
+      var hamburgerIcon = button ? button.querySelector(".hamburger-icon") : null
       
-      menu.classList.remove("show")
-      if (hamburgerIcon) hamburgerIcon.classList.remove("active")
-      document.body.style.overflow = ""
-      setTimeout(() => {
-        menu.classList.add("hidden")
-      }, 300)
+      if (menu) {
+        menu.classList.remove("show")
+        if (hamburgerIcon) hamburgerIcon.classList.remove("active")
+        document.body.style.overflow = ""
+        setTimeout(function() {
+          menu.classList.add("hidden")
+          menu.style.display = "none"
+        }, 300)
+      }
     })
-  })
+  }
 
   // Close mobile menu when clicking outside
-  document.addEventListener("click", (e) => {
-    const menu = document.getElementById("mobile-menu")
-    const button = document.getElementById("mobile-menu-button")
+  document.addEventListener("click", function(e) {
+    var menu = document.getElementById("mobile-menu")
+    var button = document.getElementById("mobile-menu-button")
     
-    if (!menu.contains(e.target) && !button.contains(e.target) && !menu.classList.contains("hidden")) {
+    if (menu && button && !menu.contains(e.target) && !button.contains(e.target) && !menu.classList.contains("hidden")) {
       toggleMobileMenu()
     }
   })
 
   // Close mobile menu on escape key
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      const menu = document.getElementById("mobile-menu")
-      if (!menu.classList.contains("hidden")) {
+  document.addEventListener("keydown", function(e) {
+    var key = e.key || e.keyCode
+    if (key === "Escape" || key === 27) {
+      var menu = document.getElementById("mobile-menu")
+      if (menu && !menu.classList.contains("hidden")) {
         toggleMobileMenu()
       }
     }

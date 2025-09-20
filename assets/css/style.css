@@ -466,26 +466,50 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Hamburger Menu Animation */
+/* Hamburger Menu Animation - Compatible */
 .hamburger-icon {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
     transition: all 0.3s ease;
+    -webkit-transform-origin: center;
+    -moz-transform-origin: center;
+    -ms-transform-origin: center;
+    -o-transform-origin: center;
     transform-origin: center;
 }
 
 .hamburger-icon.active {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
     transform: rotate(90deg);
     color: #14b8a6;
 }
 
-/* Mobile Menu Improvements */
+/* Mobile Menu Improvements - Compatible con todos los navegadores */
 .mobile-menu {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
     opacity: 0;
+    -webkit-transform: translateY(-10px);
+    -moz-transform: translateY(-10px);
+    -ms-transform: translateY(-10px);
+    -o-transform: translateY(-10px);
     transform: translateY(-10px);
 }
 
 .mobile-menu.show {
     opacity: 1;
+    -webkit-transform: translateY(0);
+    -moz-transform: translateY(0);
+    -ms-transform: translateY(0);
+    -o-transform: translateY(0);
     transform: translateY(0);
 }
 
