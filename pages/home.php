@@ -42,10 +42,10 @@
                     <i class="fas fa-play mr-2 sm:mr-3 group-hover:scale-110 transition-transform"></i>
                     <?php echo $t['home']['listen_live']; ?>
                 </button>
-                <button class="group border-2 sm:border-3 border-white text-white hover:bg-white hover:text-radio-teal px-6 sm:px-12 py-3 sm:py-5 rounded-2xl font-bold text-sm sm:text-lg transition-all duration-300 flex items-center justify-center w-full sm:w-auto">
+                <a href="<?php echo url('about'); ?>" class="group border-2 sm:border-3 border-white text-white hover:bg-white hover:text-radio-teal px-6 sm:px-12 py-3 sm:py-5 rounded-2xl font-bold text-sm sm:text-lg transition-all duration-300 flex items-center justify-center w-full sm:w-auto">
                     <i class="fas fa-compass mr-2 sm:mr-3 group-hover:rotate-180 transition-transform duration-500"></i>
                     <?php echo $t['home']['discover_more']; ?>
-                </button>
+                </a>
             </div>
             
             <!-- Modern Radio Wave Animation -->

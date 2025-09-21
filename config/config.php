@@ -12,7 +12,7 @@ define('DB_PASS', '');
 define('SITE_NAME', 'RadioRías');
 define('SITE_URL', 'http://localhost/Radio_Rias');
 define('SITE_DESCRIPTION', 'RadioRías - Tu radio online favorita');
-define('SITE_ADDRESS', 'Rúa Uruguai, 18, Calle Uruguay, Nº 18 2C, 36201 Vigo, Pontevedra, Galicia');
+define('SITE_ADDRESS', 'Rúa Uruguay 18, piso 2C, 36201 Vigo, Pontevedra, Galicia');
 define('SITE_PHONE', '+34 986 123 456');
 define('SITE_EMAIL', 'contacto@radiorias.com');
 
