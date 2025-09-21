@@ -38,10 +38,11 @@ class SimpleRadioWidget {
       background: white;
       border-radius: 15px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-      padding: 15px;
+      padding: 18px;
       z-index: 10000;
       display: none;
-      min-width: 250px;
+      min-width: 280px;
+      max-width: 320px;
     `
 
     widget.innerHTML = `
@@ -58,7 +59,25 @@ class SimpleRadioWidget {
           <i class="fas fa-broadcast-tower" style="color: #20B2AA; margin-right: 10px; font-size: 18px;"></i>
           <span style="font-weight: bold; color: #333;">RadioRías</span>
         </div>
-        <button id="simple-close-btn" style="background: none; border: none; color: #666; cursor: pointer; font-size: 16px;">
+        <button id="simple-close-btn" style="
+          background: none; 
+          border: none; 
+          color: #666; 
+          cursor: pointer; 
+          font-size: 16px;
+          padding: 8px;
+          min-width: 40px;
+          min-height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+        " 
+        onmouseover="this.style.backgroundColor='#f0f0f0'" 
+        onmouseout="this.style.backgroundColor='transparent'"
+        ontouchstart="this.style.backgroundColor='#f0f0f0'" 
+        ontouchend="this.style.backgroundColor='transparent'">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -68,15 +87,23 @@ class SimpleRadioWidget {
           background: #20B2AA;
           border: none;
           border-radius: 50%;
-          width: 45px;
-          height: 45px;
+          width: 50px;
+          height: 50px;
+          min-width: 50px;
+          min-height: 50px;
           color: white;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 16px;
-        ">
+          font-size: 18px;
+          transition: all 0.2s ease;
+          touch-action: manipulation;
+        "
+        onmouseover="this.style.transform='scale(1.05)'" 
+        onmouseout="this.style.transform='scale(1)'"
+        ontouchstart="this.style.transform='scale(1.05)'" 
+        ontouchend="this.style.transform='scale(1)'">
           <i class="fas fa-play"></i>
         </button>
         
@@ -84,10 +111,14 @@ class SimpleRadioWidget {
           <i class="fas fa-volume-up" style="color: #666; font-size: 14px;"></i>
           <input type="range" id="simple-volume-slider" min="0" max="100" value="50" style="
             flex: 1;
-            height: 4px;
-            border-radius: 2px;
+            height: 6px;
+            border-radius: 3px;
             background: #ddd;
             outline: none;
+            cursor: pointer;
+            touch-action: manipulation;
+            -webkit-appearance: none;
+            appearance: none;
           ">
         </div>
       </div>
@@ -105,17 +136,28 @@ class SimpleRadioWidget {
   }
 
   bindEvents() {
-    // Botón de play/pause
+    // Botón de play/pause - con prevención de drag
     const playBtn = document.getElementById("simple-play-btn")
     playBtn.addEventListener("click", () => this.togglePlay())
+    playBtn.addEventListener("mousedown", (e) => e.stopPropagation())
+    playBtn.addEventListener("touchstart", (e) => e.stopPropagation())
 
-    // Botón de cerrar
+    // Botón de cerrar - con prevención de drag
     const closeBtn = document.getElementById("simple-close-btn")
-    closeBtn.addEventListener("click", () => this.hideWidget())
+    closeBtn.addEventListener("click", (e) => {
+      e.stopPropagation()
+      this.hideWidget()
+    })
+    
+    // Evitar que el drag se active en el botón de cerrar
+    closeBtn.addEventListener("mousedown", (e) => e.stopPropagation())
+    closeBtn.addEventListener("touchstart", (e) => e.stopPropagation())
 
-    // Control de volumen
+    // Control de volumen - con prevención de drag
     const volumeSlider = document.getElementById("simple-volume-slider")
     volumeSlider.addEventListener("input", (e) => this.setVolume(e.target.value))
+    volumeSlider.addEventListener("mousedown", (e) => e.stopPropagation())
+    volumeSlider.addEventListener("touchstart", (e) => e.stopPropagation())
   }
 
   setupDrag() {
