@@ -15,6 +15,13 @@ class SimpleRadioWidget {
     this.dragOffset = { x: 0, y: 0 }
     this.position = { x: 20, y: 20 }
     
+    // Variables para monitor de conexión continua
+    this.connectionMonitor = null
+    this.lastProgressTime = Date.now()
+    this.stallDetectionTime = 5000 // 5 segundos sin progreso = reconectar
+    this.reconnectAttempts = 0
+    this.maxReconnectAttempts = 3
+    
     console.log("[RadioRías] Widget Simple inicializado")
     this.init()
   }
@@ -24,6 +31,7 @@ class SimpleRadioWidget {
     this.bindEvents()
     this.setupDrag()
     this.initAudio()
+    this.startConnectionMonitor()
     this.loadPosition()
     this.loadVisibilityState()
   }
@@ -242,30 +250,63 @@ class SimpleRadioWidget {
     this.audio.volume = this.volume / 100
     this.audio.preload = "none"
     
-    // Eventos de audio
+    // Eventos de audio optimizados para detección de problemas
     this.audio.addEventListener('loadstart', () => {
       this.updateStatus("Conectando...")
       this.setLoadingState(true)
+      this.lastProgressTime = Date.now()
+      console.log("[RadioRías] Iniciando carga del stream")
     })
     
     this.audio.addEventListener('canplay', () => {
       this.updateStatus("Listo")
       this.setLoadingState(false)
+      this.lastProgressTime = Date.now()
+      this.reconnectAttempts = 0 // Reset en éxito
     })
     
     this.audio.addEventListener('playing', () => {
       this.updateStatus("Reproduciendo")
       this.setLoadingState(false)
+      this.lastProgressTime = Date.now()
+      console.log("[RadioRías] Stream reproduciéndose correctamente")
+    })
+    
+    this.audio.addEventListener('progress', () => {
+      this.lastProgressTime = Date.now()
+      // Stream recibiendo datos correctamente
+    })
+    
+    this.audio.addEventListener('timeupdate', () => {
+      this.lastProgressTime = Date.now()
+      // Audio progresando normalmente
     })
     
     this.audio.addEventListener('pause', () => {
-      this.updateStatus("Pausado")
+      if (this.isPlaying) {
+        // Pausa inesperada - posible problema de conexión
+        console.warn("[RadioRías] Pausa inesperada detectada")
+        this.handleUnexpectedPause()
+      } else {
+        this.updateStatus("Pausado")
+      }
+    })
+    
+    this.audio.addEventListener('stalled', () => {
+      console.warn("[RadioRías] Stream atascado - reconectando...")
+      this.handleStreamStall()
+    })
+    
+    this.audio.addEventListener('waiting', () => {
+      console.log("[RadioRías] Buffering...")
+      this.updateStatus("Buffering...")
     })
     
     this.audio.addEventListener('error', (e) => {
       console.error("[RadioRías] Error de audio:", e)
       this.updateStatus("Error de conexión")
       this.setLoadingState(false)
+      this.handleStreamError()
     })
 
     document.body.appendChild(this.audio)
@@ -360,6 +401,9 @@ class SimpleRadioWidget {
         this.isPlaying = false
       }
       
+      // Detener monitor de conexión
+      this.stopConnectionMonitor()
+      
       console.log("[RadioRías] Widget ocultado")
     }
   }
@@ -391,6 +435,89 @@ class SimpleRadioWidget {
 
   saveVisibilityState() {
     localStorage.setItem("simple-radio-widget-visible", this.isVisible.toString())
+  }
+
+  // Monitor de conexión continua
+  startConnectionMonitor() {
+    // Verificar cada 2 segundos si el stream está funcionando
+    this.connectionMonitor = setInterval(() => {
+      if (this.isPlaying) {
+        const timeSinceProgress = Date.now() - this.lastProgressTime
+        
+        if (timeSinceProgress > this.stallDetectionTime) {
+          console.warn(`[RadioRías] Sin progreso por ${timeSinceProgress}ms - reconectando preventivamente`)
+          this.handleStreamStall()
+        }
+      }
+    }, 2000)
+    
+    console.log("[RadioRías] Monitor de conexión iniciado")
+  }
+
+  stopConnectionMonitor() {
+    if (this.connectionMonitor) {
+      clearInterval(this.connectionMonitor)
+      this.connectionMonitor = null
+      console.log("[RadioRías] Monitor de conexión detenido")
+    }
+  }
+
+  // Manejar pausa inesperada (el famoso bug de los 2 minutos)
+  handleUnexpectedPause() {
+    console.log("[RadioRías] Manejando pausa inesperada...")
+    this.reconnectStream("Pausa inesperada")
+  }
+
+  // Manejar stream atascado
+  handleStreamStall() {
+    console.log("[RadioRías] Manejando stream atascado...")
+    this.reconnectStream("Stream atascado")
+  }
+
+  // Manejar error de stream
+  handleStreamError() {
+    console.log("[RadioRías] Manejando error de stream...")
+    this.reconnectStream("Error de conexión")
+  }
+
+  // Reconexión inteligente sin cortes
+  async reconnectStream(reason) {
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      console.error("[RadioRías] Máximo de reconexiones alcanzado")
+      this.updateStatus("Error: Máximo de intentos alcanzado")
+      this.setLoadingState(false)
+      return
+    }
+
+    this.reconnectAttempts++
+    console.log(`[RadioRías] Reconectando... (${this.reconnectAttempts}/${this.maxReconnectAttempts}) - Razón: ${reason}`)
+    
+    this.updateStatus(`Reconectando... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
+    
+    try {
+      // Agregar timestamp para evitar caché
+      const timestamp = Date.now()
+      this.audio.src = `${this.streamUrl}?t=${timestamp}`
+      
+      // Reiniciar el audio
+      this.audio.load()
+      
+      // Intentar reproducir inmediatamente
+      await this.audio.play()
+      
+      console.log("[RadioRías] Reconexión exitosa")
+      this.lastProgressTime = Date.now()
+      
+    } catch (error) {
+      console.error("[RadioRías] Error en reconexión:", error)
+      
+      // Intentar de nuevo después de un breve delay
+      setTimeout(() => {
+        if (this.isPlaying) {
+          this.reconnectStream(`Reintento después de error: ${error.message}`)
+        }
+      }, 1000)
+    }
   }
 }
 
