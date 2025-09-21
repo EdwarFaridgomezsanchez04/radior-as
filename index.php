@@ -68,7 +68,7 @@ function url($page, $lang = null) {
 
     <script src="assets/js/main.js"></script>
     
-    <!-- Widget Flotante de Radio -->
-    <script src="js/floating-radio-widget.js"></script>
+    <!-- Configuración de RadioRías -->
+    <script src="config/radio-config.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

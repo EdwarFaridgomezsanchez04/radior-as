@@ -40,7 +40,7 @@
         </div>
 
         <!-- Mobile Navigation -->
-        <div id="mobile-menu" class="mobile-menu fixed inset-x-0 top-20 bg-white shadow-xl border-t border-slate-200 z-40 hidden">
+        <div id="mobile-menu" class="mobile-menu fixed inset-x-0 bg-white shadow-xl border-t border-slate-200 z-50 hidden" style="top: 64px; min-height: 200px;">
             <div class="max-w-7xl mx-auto px-4 py-6">
                 <div class="flex flex-col space-y-1">
                     <a href="<?php echo url('home'); ?>" class="mobile-nav-link text-slate-700 hover:text-radio-teal px-4 py-4 rounded-xl hover:bg-slate-50 font-bold transition-all duration-300 flex items-center <?php echo $page === 'home' ? 'bg-radio-teal bg-opacity-10 text-radio-teal' : ''; ?>">

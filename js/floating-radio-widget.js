@@ -46,6 +46,7 @@ class FloatingRadioWidget {
     this.loadVisibilityState() // Cargar estado de visibilidad
     this.initAudio()
     this.startConnectionMonitor()
+    this.startMetadataUpdater() // Iniciar actualizador de metadatos
   }
 
   createWidget() {
@@ -116,15 +117,21 @@ class FloatingRadioWidget {
       widget.style.transition = "none"
       document.addEventListener("mousemove", this.drag)
       document.addEventListener("mouseup", this.endDrag)
+      document.addEventListener("touchmove", this.drag)
+      document.addEventListener("touchend", this.endDrag)
       e.preventDefault()
     }
 
-    // Función de arrastre
+    // Función de arrastre - compatible con touch y mouse
     this.drag = (e) => {
       if (!this.isDragging) return
 
-      this.position.x = e.clientX - this.dragOffset.x
-      this.position.y = e.clientY - this.dragOffset.y
+      // Obtener coordenadas del evento (mouse o touch)
+      const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0)
+      const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0)
+
+      this.position.x = clientX - this.dragOffset.x
+      this.position.y = clientY - this.dragOffset.y
 
       // Limitar a los bordes de la pantalla
       const maxX = window.innerWidth - widget.offsetWidth
@@ -142,6 +149,8 @@ class FloatingRadioWidget {
       widget.style.transition = ""
       document.removeEventListener("mousemove", this.drag)
       document.removeEventListener("mouseup", this.endDrag)
+      document.removeEventListener("touchmove", this.drag)
+      document.removeEventListener("touchend", this.endDrag)
       this.savePosition()
     }
 
@@ -150,8 +159,16 @@ class FloatingRadioWidget {
 
     // Soporte para touch (móviles)
     header.addEventListener("touchstart", (e) => {
-      e.preventDefault()
-      startDrag(e.touches[0])
+      if (e.preventDefault) e.preventDefault()
+      const touch = e.touches[0]
+      // Crear un objeto evento compatible con las coordenadas del touch
+      const touchEvent = {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        touches: e.touches,
+        preventDefault: function() {}
+      }
+      startDrag(touchEvent)
     })
   }
 
@@ -193,14 +210,13 @@ class FloatingRadioWidget {
   }
 
   initAudio() {
-    // Usar video element como en la imagen para mejor compatibilidad
-    this.audio = document.createElement('video')
+    // Usar audio element para streaming de radio
+    this.audio = document.createElement('audio')
     this.audio.preload = "auto"
     this.audio.crossOrigin = "anonymous"
     this.audio.volume = this.volume / 100
     this.audio.autoplay = false // Controlado manualmente
     this.audio.controls = false // Sin controles visibles
-    this.audio.style.display = 'none' // Oculto
 
     if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
@@ -533,23 +549,87 @@ class FloatingRadioWidget {
     console.log("[RadioRías] Volumen ajustado a:", this.volume + "%")
   }
 
-  // Obtener información del stream de RadioRías
+  // Obtener información del stream usando configuración
   async getStreamInfo() {
     try {
-      console.log("[RadioRías] Conectando al servidor...")
+      console.log("[RadioRías] Conectando al servidor Icecast...")
 
-      // Usar directamente la URL del servidor como en la imagen
-      this.streamUrl = "http://88.150.230.110:8950/stream"
-        console.log("[RadioRías] Stream conectado:", this.streamUrl)
-        this.updateStatus("Conectado")
-        return true
+      // Usar configuración si está disponible
+      const config = window.RadioRiasConfig || {}
+      this.streamUrl = config.stream?.primary || "http://88.150.230.110:8950/stream"
+      
+      console.log("[RadioRías] Stream Icecast conectado:", this.streamUrl)
+      this.updateStatus("Conectado")
+      
+      // Intentar obtener metadatos si están habilitados
+      if (config.metadata?.enabled !== false) {
+        await this.fetchNowPlaying()
+      }
+      
+      return true
     } catch (error) {
-      console.error("[RadioRías] Error conectando al stream:", error)
-      // Usar URL de respaldo en caso de error
-      this.streamUrl = "http://88.150.230.110:8950/stream"
-      this.updateStatus("Conectando a respaldo...")
+      console.error("[RadioRías] Error conectando al servidor:", error)
+      // Usar URL de respaldo de la configuración o por defecto
+      const config = window.RadioRiasConfig || {}
+      this.streamUrl = config.stream?.fallback || "http://88.150.230.110:8950/stream"
+      this.updateStatus("Usando servidor de respaldo...")
       return true
     }
+  }
+
+  // Obtener información de "Ahora Suena" de servidor Icecast
+  async fetchNowPlaying() {
+    try {
+      const config = window.RadioRiasConfig || {}
+      const apiUrl = config.metadata?.apiUrl || "http://88.150.230.110:8950/status-json.xsl"
+      
+      const response = await fetch(apiUrl)
+      
+      if (response.ok) {
+        const data = await response.json()
+        
+        let songInfo = "RadioRías en vivo"
+        
+        // Formato de respuesta de Icecast
+        if (data.icestats && data.icestats.source) {
+          const sources = Array.isArray(data.icestats.source) ? data.icestats.source : [data.icestats.source]
+          
+          // Buscar el source que corresponde a nuestro stream
+          const streamSource = sources.find(source => 
+            source.listenurl && source.listenurl.includes('8950/stream')
+          ) || sources[0]
+          
+          if (streamSource) {
+            if (streamSource.title) {
+              songInfo = streamSource.title
+            } else if (streamSource.server_name) {
+              songInfo = streamSource.server_name
+            }
+            
+            console.log("[RadioRías] Datos del stream:", {
+              title: streamSource.title,
+              listeners: streamSource.listeners,
+              bitrate: streamSource.bitrate
+            })
+          }
+        }
+        
+        this.updateNowPlaying(songInfo)
+        console.log("[RadioRías] Ahora suena:", songInfo)
+      }
+    } catch (error) {
+      console.log("[RadioRías] No se pudieron obtener metadatos de Icecast:", error.message)
+      this.updateNowPlaying("RadioRías en vivo")
+    }
+  }
+
+  // Actualizar información de "Ahora Suena"
+  updateNowPlaying(songInfo) {
+    // Actualizar en la interfaz si hay elementos para mostrar la canción
+    const nowPlayingElements = document.querySelectorAll(".now-playing-text")
+    nowPlayingElements.forEach(element => {
+      element.textContent = songInfo
+    })
   }
 
   handleAudioError(error) {
@@ -614,6 +694,27 @@ class FloatingRadioWidget {
     }
   }
 
+  setLoadingState(isLoading) {
+    const playButton = document.querySelector(".play-btn")
+    const playIcon = document.querySelector(".play-btn i")
+    
+    if (playButton && playIcon) {
+      if (isLoading) {
+        // Mostrar estado de carga
+        playIcon.className = "fas fa-spinner fa-spin"
+        playButton.disabled = true
+        playButton.style.opacity = "0.6"
+      } else {
+        // Restaurar estado normal
+        playIcon.className = this.isPlaying ? "fas fa-pause" : "fas fa-play"
+        playButton.disabled = false
+        playButton.style.opacity = "1"
+      }
+    }
+    
+    console.log(`[RadioRías] Estado de carga: ${isLoading ? 'Cargando...' : 'Listo'}`)
+  }
+
   savePosition() {
     localStorage.setItem("radio-widget-position", JSON.stringify(this.position))
   }
@@ -637,6 +738,31 @@ class FloatingRadioWidget {
 
   saveVisibilityState() {
     localStorage.setItem("radio-widget-visible", this.isVisible.toString())
+  }
+
+  // Iniciar actualizador de metadatos
+  startMetadataUpdater() {
+    const config = window.RadioRiasConfig || {}
+    const interval = config.metadata?.updateInterval || 30000 // 30 segundos por defecto
+    
+    // Solo iniciar si los metadatos están habilitados
+    if (config.metadata?.enabled !== false) {
+      this.metadataInterval = setInterval(() => {
+        if (this.isPlaying) {
+          this.fetchNowPlaying()
+        }
+      }, interval)
+      
+      console.log(`[RadioRías] Actualizador de metadatos iniciado (cada ${interval/1000}s)`)
+    }
+  }
+
+  // Detener actualizador de metadatos
+  stopMetadataUpdater() {
+    if (this.metadataInterval) {
+      clearInterval(this.metadataInterval)
+      this.metadataInterval = null
+    }
   }
 
   // Método público para reiniciar manualmente

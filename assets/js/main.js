@@ -1,74 +1,45 @@
 // Main JavaScript functionality for Radio Rías
 
-// Mobile Menu Toggle - Compatible con todos los navegadores
+// Mobile Menu Toggle - Versión robusta para Hostinger
 function toggleMobileMenu() {
+  console.log("toggleMobileMenu called");
+  
   var menu = document.getElementById("mobile-menu")
   var button = document.getElementById("mobile-menu-button")
   var hamburgerIcon = button ? button.querySelector(".hamburger-icon") : null
   
-  console.log("Toggle menu clicked", menu, button, hamburgerIcon); // Debug
-  
   if (!menu) {
-    console.error("Menu not found!")
+    console.error("Menu element not found!")
     return
   }
   
-  // Verificar si el menú está oculto usando múltiples métodos
-  var isHidden = menu.classList.contains("hidden") || menu.style.display === "none"
+  console.log("Menu found:", menu);
+  console.log("Menu classes:", menu.className);
+  console.log("Menu display:", menu.style.display);
+  
+  // Verificar estado actual del menú
+  var isHidden = menu.classList.contains("hidden") || 
+                 menu.style.display === "none" || 
+                 menu.style.display === ""
   
   if (isHidden) {
-    // Mostrar menú
-    if (menu.classList) {
-      menu.classList.remove("hidden")
-    }
+    // Mostrar menú - Método súper directo
+    menu.classList.remove("hidden")
+    menu.classList.add("show")
     menu.style.display = "block"
+    menu.style.visibility = "visible"
     menu.style.opacity = "1"
-    
-    // Usar setTimeout solo si está disponible
-    if (window.setTimeout) {
-      setTimeout(function() {
-        if (menu.classList) {
-          menu.classList.add("show")
-        }
-      }, 50)
-    } else {
-      if (menu.classList) {
-        menu.classList.add("show")
-      }
-    }
-    
-    if (hamburgerIcon && hamburgerIcon.classList) {
-      hamburgerIcon.classList.add("active")
-    }
-    document.body.style.overflow = "hidden"
-    console.log("Menu shown")
+    if (hamburgerIcon) hamburgerIcon.classList.add("active")
+    console.log("Menu shown - display:", menu.style.display, "visibility:", menu.style.visibility)
   } else {
     // Ocultar menú
-    if (menu.classList) {
-      menu.classList.remove("show")
-    }
+    menu.classList.add("hidden")
+    menu.classList.remove("show")
+    menu.style.display = "none"
+    menu.style.visibility = "hidden"
     menu.style.opacity = "0"
-    
-    if (hamburgerIcon && hamburgerIcon.classList) {
-      hamburgerIcon.classList.remove("active")
-    }
-    document.body.style.overflow = ""
-    
-    // Usar setTimeout solo si está disponible
-    if (window.setTimeout) {
-      setTimeout(function() {
-        if (menu.classList) {
-          menu.classList.add("hidden")
-        }
-        menu.style.display = "none"
-      }, 300)
-    } else {
-      if (menu.classList) {
-        menu.classList.add("hidden")
-      }
-      menu.style.display = "none"
-    }
-    console.log("Menu hidden")
+    if (hamburgerIcon) hamburgerIcon.classList.remove("active")
+    console.log("Menu hidden - display:", menu.style.display)
   }
 }
 

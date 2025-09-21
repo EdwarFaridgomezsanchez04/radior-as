@@ -38,5 +38,5 @@
     </div>
 </footer>
 
-<!-- Widget Flotante JavaScript -->
-<script src="js/floating-radio-widget.js"></script>
+<!-- Widget Flotante JavaScript - Versión Simple -->
+<script src="js/simple-radio-widget.js?v=<?php echo time(); ?>"></script>

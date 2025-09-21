@@ -489,30 +489,7 @@ body {
     color: #14b8a6;
 }
 
-/* Mobile Menu Improvements - Compatible con todos los navegadores */
-.mobile-menu {
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    -ms-transition: all 0.3s ease;
-    -o-transition: all 0.3s ease;
-    transition: all 0.3s ease;
-    opacity: 0;
-    -webkit-transform: translateY(-10px);
-    -moz-transform: translateY(-10px);
-    -ms-transform: translateY(-10px);
-    -o-transform: translateY(-10px);
-    transform: translateY(-10px);
-}
-
-.mobile-menu.show {
-    opacity: 1;
-    -webkit-transform: translateY(0);
-    -moz-transform: translateY(0);
-    -ms-transform: translateY(0);
-    -o-transform: translateY(0);
-    transform: translateY(0);
-}
-
+/* Mobile Menu - Versión simple para máxima compatibilidad */
 .mobile-menu.hidden {
     display: none !important;
 }
@@ -567,6 +544,84 @@ body {
     input, textarea, select {
         font-size: 16px !important;
     }
+}
+
+/* Colores personalizados RadioRías - Restaurados */
+:root {
+    --radio-teal: #20B2AA;
+    --radio-cyan: #00CED1;
+    --radio-dark: #1a202c;
+    --teal-500: #14b8a6;
+    --teal-600: #0d9488;
+    --cyan-400: #22d3ee;
+    --slate-800: #1e293b;
+}
+
+/* Clases Tailwind personalizadas */
+.text-radio-teal { color: var(--radio-teal) !important; }
+.bg-radio-teal { background-color: var(--radio-teal) !important; }
+.border-radio-teal { border-color: var(--radio-teal) !important; }
+.text-radio-cyan { color: var(--radio-cyan) !important; }
+.bg-radio-cyan { background-color: var(--radio-cyan) !important; }
+.text-radio-dark { color: var(--radio-dark) !important; }
+.bg-radio-dark { background-color: var(--radio-dark) !important; }
+
+/* Estados hover y focus */
+.hover\:text-radio-teal:hover { color: var(--radio-teal) !important; }
+.hover\:text-radio-cyan:hover { color: var(--radio-cyan) !important; }
+.focus\:ring-radio-teal:focus { --tw-ring-color: var(--radio-teal) !important; }
+.focus\:border-radio-teal:focus { border-color: var(--radio-teal) !important; }
+
+/* Gradientes */
+.from-radio-teal { --tw-gradient-from: var(--radio-teal) !important; }
+.via-radio-cyan { --tw-gradient-via: var(--radio-cyan) !important; }
+.to-teal-600 { --tw-gradient-to: var(--teal-600) !important; }
+
+/* Opacidades */
+.bg-radio-teal.bg-opacity-10 { background-color: rgba(32, 178, 170, 0.1) !important; }
+.bg-opacity-40 { background-color: rgba(0, 0, 0, 0.4) !important; }
+
+/* Colores de texto específicos */
+.text-yellow-300 { color: #fde047 !important; }
+.text-teal-600 { color: var(--teal-600) !important; }
+
+/* Menú móvil - Forzado para máxima visibilidad */
+.mobile-menu {
+    z-index: 9999 !important;
+    position: fixed !important;
+    top: 64px !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    background-color: white !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+    border-top: 1px solid #e2e8f0 !important;
+    min-height: 200px !important;
+}
+
+.mobile-menu.hidden {
+    display: none !important;
+}
+
+.mobile-menu.show {
+    display: block !important;
+}
+
+/* Asegurar que el contenido del menú sea visible */
+.mobile-menu .max-w-7xl {
+    background-color: white !important;
+    padding: 24px 16px !important;
+}
+
+.mobile-nav-link {
+    display: flex !important;
+    align-items: center !important;
+    padding: 16px !important;
+    color: #374151 !important;
+    font-weight: bold !important;
+    border-radius: 12px !important;
+    margin-bottom: 4px !important;
+    min-height: 56px !important;
 }
 
 /* Smooth scrolling for mobile */
