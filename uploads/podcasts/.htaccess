@@ -1,0 +1,31 @@
+# Permitir acceso a archivos de medios
+<IfModule mod_mime.c>
+    AddType audio/mpeg .mp3
+    AddType audio/wav .wav
+    AddType audio/ogg .ogg
+    AddType audio/mp4 .m4a
+    AddType audio/aac .aac
+    AddType image/jpeg .jpg .jpeg
+    AddType image/png .png
+    AddType image/gif .gif
+    AddType image/webp .webp
+</IfModule>
+
+# Permitir acceso desde cualquier origen (CORS)
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type"
+</IfModule>
+
+# Permitir descarga de archivos
+<FilesMatch "\.(mp3|wav|ogg|m4a|aac|jpg|jpeg|png|gif|webp)$">
+    Header set Content-Disposition "inline"
+    Header set Cache-Control "public, max-age=3600"
+</FilesMatch>
+
+# Denegar acceso a archivos PHP
+<FilesMatch "\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>

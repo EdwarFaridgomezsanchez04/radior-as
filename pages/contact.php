@@ -56,7 +56,11 @@
                     <?php echo $t['contact']['send_message']; ?>
                 </h2>
                 
-                <form id="contact-form" action="#" method="POST" class="space-y-6 sm:space-y-8">
+                <?php
+                $is_direct_access = basename($_SERVER['PHP_SELF']) === 'contact.php';
+                $api_path = $is_direct_access ? '../api/contact_form.php' : 'api/contact_form.php';
+                ?>
+                <form id="contact-form" action="<?php echo $api_path; ?>" method="POST" class="space-y-6 sm:space-y-8">
                     <div class="grid md:grid-cols-2 gap-6 sm:gap-8">
                         <div>
                             <label for="name" class="block text-sm sm:text-base font-bold text-slate-700 mb-2 sm:mb-3">
@@ -322,6 +326,75 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Texto ingresado en', this.name, ':', this.value);
         });
     });
+
+    // Manejar envío del formulario de contacto
+    const contactForm = document.getElementById('contact-form');
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+
+    contactForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Deshabilitar botón y mostrar loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
+        
+        try {
+            const formData = new FormData(contactForm);
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Mostrar mensaje de éxito
+                showMessage(result.message, 'success');
+                contactForm.reset();
+            } else {
+                // Mostrar mensaje de error
+                showMessage(result.message, 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('Error al enviar el mensaje. Inténtalo de nuevo.', 'error');
+        } finally {
+            // Restaurar botón
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+
+    // Función para mostrar mensajes
+    function showMessage(message, type) {
+        // Crear elemento de mensaje
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md transition-all duration-300 transform translate-x-full`;
+        
+        if (type === 'success') {
+            messageDiv.className += ' bg-green-500 text-white';
+            messageDiv.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+        } else {
+            messageDiv.className += ' bg-red-500 text-white';
+            messageDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${message}`;
+        }
+        
+        document.body.appendChild(messageDiv);
+        
+        // Animar entrada
+        setTimeout(() => {
+            messageDiv.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Remover después de 5 segundos
+        setTimeout(() => {
+            messageDiv.classList.add('translate-x-full');
+            setTimeout(() => {
+                document.body.removeChild(messageDiv);
+            }, 300);
+        }, 5000);
+    }
 });
 </script>
 

@@ -1,5 +1,8 @@
 <?php
-session_start();
+// Iniciar sesión solo si no está ya iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Sistema de idiomas
 $lang = isset($_GET['lang']) ? $_GET['lang'] : (isset($_SESSION['lang']) ? $_SESSION['lang'] : 'es');
@@ -67,8 +70,9 @@ function url($page, $lang = null) {
     <?php include 'includes/footer.php'; ?>
 
     <script src="assets/js/main.js"></script>
+    <script src="assets/js/simple-analytics.js"></script>
     
-    <!-- Configuración de RadioRías -->
+    <!-- Configuración de RadioRías (debe cargarse ANTES del widget) -->
     <script src="config/radio-config.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

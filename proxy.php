@@ -4,7 +4,7 @@ error_reporting(0);
 ini_set('display_errors', 0);
 
 // URL del servidor Icecast
-$streamUrl = "http://88.150.230.110:8950/stream";
+$streamUrl = "https://ec7.yesstreaming.net:2325/stream";
 
 // Headers optimizados para streaming infinito
 header("Content-Type: audio/mpeg");

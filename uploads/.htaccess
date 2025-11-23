@@ -1,0 +1,20 @@
+# Proteger directorio de uploads
+Options -Indexes
+
+# Permitir solo ciertos tipos de archivos
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|mp3|wav|ogg|m4a|aac)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Denegar acceso a archivos PHP
+<FilesMatch "\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Denegar acceso a archivos de configuración
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|sql)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>

@@ -38,7 +38,7 @@
             
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-12 sm:mb-16 px-4">
-                <button onclick="showDualBufferRadioWidget()" class="group bg-white text-radio-teal px-6 sm:px-12 py-3 sm:py-5 rounded-2xl font-bold text-sm sm:text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center w-full sm:w-auto">
+                <button onclick="showRadioWidget()" class="group bg-white text-radio-teal px-6 sm:px-12 py-3 sm:py-5 rounded-2xl font-bold text-sm sm:text-lg shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center w-full sm:w-auto">
                     <i class="fas fa-play mr-2 sm:mr-3 group-hover:scale-110 transition-transform"></i>
                     <?php echo $t['home']['listen_live']; ?>
                 </button>
@@ -76,7 +76,7 @@
 </section>
 
 <!-- Modern News Section -->
-<!-- <section class="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-gray-50 to-white">
+<section class="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-gray-50 to-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 sm:mb-16 lg:mb-20">
             <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 mb-4 sm:mb-6">
@@ -88,9 +88,9 @@
             </p>
         </div>
         
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"> -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             <!-- News Card 1 -->
-            <!-- <article class="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 sm:hover:-translate-y-4">
+            <article class="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 sm:hover:-translate-y-4">
                 <div class="h-48 sm:h-64 bg-gradient-to-br from-radio-teal to-radio-cyan relative overflow-hidden">
                     <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-0 transition-all duration-500"></div>
                     <div class="absolute inset-0 flex items-center justify-center">
@@ -111,10 +111,10 @@
                         Leer más <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
-            </article> -->
+            </article>
 
             <!-- News Card 2 -->
-            <!-- <article class="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 sm:hover:-translate-y-4">
+            <article class="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 sm:hover:-translate-y-4">
                 <div class="h-48 sm:h-64 bg-gradient-to-br from-purple-500 to-pink-500 relative overflow-hidden">
                     <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-0 transition-all duration-500"></div>
                     <div class="absolute inset-0 flex items-center justify-center">
@@ -135,10 +135,10 @@
                         Leer más <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
-            </article> -->
+            </article>
 
             <!-- News Card 3 -->
-            <!-- <article class="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 sm:hover:-translate-y-4 sm:col-span-2 lg:col-span-1">
+            <article class="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 sm:hover:-translate-y-4 sm:col-span-2 lg:col-span-1">
                 <div class="h-48 sm:h-64 bg-gradient-to-br from-orange-400 to-red-500 relative overflow-hidden">
                     <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-0 transition-all duration-500"></div>
                     <div class="absolute inset-0 flex items-center justify-center">
@@ -162,10 +162,10 @@
             </article>
         </div>
     </div>
-</section> -->
+</section>
 
 <!-- Modern Programs Section -->
-<!-- <section class="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-radio-teal to-radio-cyan">
+<section class="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-radio-teal to-radio-cyan">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 sm:mb-16 lg:mb-20">
             <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white mb-4 sm:mb-6">
@@ -175,70 +175,80 @@
             <p class="text-base sm:text-lg lg:text-xl text-white text-opacity-90 max-w-2xl mx-auto px-4">
                 Los programas más populares de nuestra parrilla radiofónica
             </p>
-        </div> -->
+        </div>
         
-        <!-- <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+        <?php
+        // Obtener programas destacados de la base de datos
+        require_once('config/conexion.php');
+        $conex = new database();
+        $con = $conex->conectar();
+        
+        $sql = "SELECT * FROM programas WHERE activo = 1 AND destacado = 1 ORDER BY nombre_es LIMIT 3";
+        $programas_destacados = $con->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        ?>
+        
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div class="space-y-6 sm:space-y-8 order-2 lg:order-1">
-                <!-- Program 1 -->
-                <!-- <div class="group bg-white bg-opacity-10 backdrop-blur-lg p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
-                        <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Buenos Días Morrazo</h3>
-                        <span class="bg-yellow-300 text-radio-dark px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold text-sm flex items-center w-fit">
-                            <i class="fas fa-sun mr-2"></i>07:00 - 10:00
-                        </span>
+                <?php if (empty($programas_destacados)): ?>
+                    <!-- Mensaje cuando no hay programas destacados -->
+                    <div class="group bg-white bg-opacity-10 backdrop-blur-lg p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-white border-opacity-20 text-center">
+                        <i class="fas fa-star text-4xl text-yellow-300 mb-4"></i>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-4">Próximamente</h3>
+                        <p class="text-white text-opacity-90 text-sm sm:text-base">
+                            Estamos preparando nuestros programas destacados para ti.
+                        </p>
                     </div>
-                    <p class="text-white text-opacity-90 mb-4 sm:mb-6 text-sm sm:text-base lg:text-lg leading-relaxed">
-                        Tu compañía perfecta para comenzar el día con energía, noticias locales y la mejor música.
-                    </p>
-                    <a href="#" class="inline-flex items-center text-yellow-300 hover:text-yellow-200 font-bold text-sm sm:text-base lg:text-lg group-hover:translate-x-2 transition-all">
-                        Ver programa <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div> --> 
-
-                <!-- Program 2 -->
-                <!-- <div class="group bg-white bg-opacity-10 backdrop-blur-lg p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
-                        <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Cultura Galega</h3>
-                        <span class="bg-yellow-300 text-radio-dark px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold text-sm flex items-center w-fit">
-                            <i class="fas fa-heart mr-2"></i>15:00 - 16:00
-                        </span>
-                    </div>
-                    <p class="text-white text-opacity-90 mb-4 sm:mb-6 text-sm sm:text-base lg:text-lg leading-relaxed">
-                        Exploramos nuestras raíces y tradiciones culturales con invitados especiales y música tradicional.
-                    </p>
-                    <a href="#" class="inline-flex items-center text-yellow-300 hover:text-yellow-200 font-bold text-sm sm:text-base lg:text-lg group-hover:translate-x-2 transition-all">
-                        Ver programa <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div> -->
-
-                <!-- Program 3 -->
-                <!-- <!-- <div class="group bg-white bg-opacity-10 backdrop-blur-lg p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
-                        <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Noches de Radio</h3>
-                        <span class="bg-yellow-300 text-radio-dark px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold text-sm flex items-center w-fit">
-                            <i class="fas fa-moon mr-2"></i>21:00 - 23:00
-                        </span>
-                    </div>
-                    <p class="text-white text-opacity-90 mb-4 sm:mb-6 text-sm sm:text-base lg:text-lg leading-relaxed">
-                        El programa nocturno perfecto con música relajante y conversaciones íntimas.
-                    </p>
-                    <a href="#" class="inline-flex items-center text-yellow-300 hover:text-yellow-200 font-bold text-sm sm:text-base lg:text-lg group-hover:translate-x-2 transition-all">
-                        Ver programa <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
-                </div> 
+                <?php else: ?>
+                    <?php 
+                    $iconos = ['fas fa-sun', 'fas fa-heart', 'fas fa-moon', 'fas fa-music', 'fas fa-microphone'];
+                    foreach ($programas_destacados as $index => $programa): 
+                        $icono = $iconos[$index % count($iconos)];
+                    ?>
+                        <div class="group bg-white bg-opacity-10 backdrop-blur-lg p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+                                <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                                    <?php echo htmlspecialchars($programa['nombre_es']); ?>
+                                </h3>
+                                <span class="bg-yellow-300 text-radio-dark px-4 sm:px-6 py-2 sm:py-3 rounded-full font-bold text-sm flex items-center w-fit">
+                                    <i class="<?php echo $icono; ?> mr-2"></i><?php echo htmlspecialchars($programa['horario']); ?>
+                                </span>
+                            </div>
+                            <p class="text-white text-opacity-90 mb-4 sm:mb-6 text-sm sm:text-base lg:text-lg leading-relaxed">
+                                <?php echo htmlspecialchars($programa['descripcion_es']); ?>
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <a href="<?php echo url('programs'); ?>" class="inline-flex items-center text-yellow-300 hover:text-yellow-200 font-bold text-sm sm:text-base lg:text-lg group-hover:translate-x-2 transition-all">
+                                    Ver programa <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                                <span class="text-white text-opacity-70 text-xs sm:text-sm">
+                                    <?php echo htmlspecialchars($programa['dias']); ?>
+                                </span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
-             -->
             <!-- Visual Element -->
-            <!-- <div class="text-center order-1 lg:order-2">
+            <div class="text-center order-1 lg:order-2">
                 <div class="relative">
                     <div class="w-64 sm:w-80 lg:w-96 h-64 sm:h-80 lg:h-96 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto backdrop-blur-lg border border-white border-opacity-30 shadow-2xl transform hover:scale-105 transition-transform duration-500">
-                        <div class="w-48 sm:w-60 lg:w-72 h-48 sm:h-60 lg:h-72 bg-yellow-300 rounded-full flex items-center justify-center shadow-2xl">
-                            <i class="fas fa-radio text-5xl sm:text-6xl lg:text-8xl text-radio-dark"></i>
+                        <div class="w-48 sm:w-60 lg:w-72 h-48 sm:h-60 lg:h-72 bg-yellow-300 rounded-full flex items-center justify-center shadow-2xl relative">
+                            <i class="fas fa-broadcast-tower text-5xl sm:text-6xl lg:text-8xl text-gray-800 radio-wave-animation"></i>
+                            <!-- Ondas de radio animadas -->
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-full h-full border-2 border-gray-800 border-opacity-20 rounded-full animate-ping"></div>
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-3/4 h-3/4 border-2 border-gray-800 border-opacity-15 rounded-full animate-ping" style="animation-delay: 0.5s;"></div>
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-1/2 h-1/2 border-2 border-gray-800 border-opacity-10 rounded-full animate-ping" style="animation-delay: 1s;"></div>
+                            </div>
                         </div>
                     </div>
-                    <!--Floating elements -->
-                    <!-- <div class="absolute -top-4 sm:-top-8 -right-4 sm:-right-8 w-12 sm:w-16 h-12 sm:h-16 bg-yellow-300 rounded-full animate-bounce flex items-center justify-center">
-                        <i class="fas fa-music text-radio-dark text-base sm:text-xl"></i>
+                    <!-- Floating elements -->
+                    <div class="absolute -top-4 sm:-top-8 -right-4 sm:-right-8 w-12 sm:w-16 h-12 sm:h-16 bg-yellow-300 rounded-full animate-bounce flex items-center justify-center">
+                        <i class="fas fa-music text-gray-800 text-base sm:text-xl"></i>
                     </div>
                     <div class="absolute -bottom-4 sm:-bottom-8 -left-4 sm:-left-8 w-10 sm:w-12 h-10 sm:h-12 bg-white rounded-full animate-bounce flex items-center justify-center" style="animation-delay: 0.5s;">
                         <i class="fas fa-heart text-radio-teal text-sm sm:text-base"></i>
@@ -249,7 +259,7 @@
             </div>
         </div>
     </div>
-</section>  -->
+</section>
 
 <!-- Modern Contact Section -->
 <section class="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-gray-900 to-black text-white">

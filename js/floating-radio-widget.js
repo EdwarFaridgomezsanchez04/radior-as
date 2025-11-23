@@ -201,6 +201,23 @@ class FloatingRadioWidget {
     this.widget.style.opacity = "0"
     this.widget.style.transform = "scale(0.8)"
 
+    // Detener el audio cuando se cierra el widget
+    if (this.audio && this.isPlaying) {
+      this.audio.pause()
+      this.audio.currentTime = 0
+      this.isPlaying = false
+      this.isReconnecting = false
+      this.reconnectAttempts = 0
+      this.updatePlayButton()
+      this.updateStatus("Detenido")
+      console.log("[RadioRías] Audio detenido al cerrar widget")
+    }
+
+    // Detener monitor de conexión
+    if (this.connectionMonitor) {
+      clearInterval(this.connectionMonitor)
+    }
+
     setTimeout(() => {
       this.widget.style.display = "none"
     }, 300)
@@ -556,7 +573,7 @@ class FloatingRadioWidget {
 
       // Usar configuración si está disponible
       const config = window.RadioRiasConfig || {}
-      this.streamUrl = config.stream?.primary || "http://88.150.230.110:8950/stream"
+      this.streamUrl = config.stream?.primary || "https://ec7.yesstreaming.net:2325/stream"
       
       console.log("[RadioRías] Stream Icecast conectado:", this.streamUrl)
       this.updateStatus("Conectado")
@@ -571,7 +588,7 @@ class FloatingRadioWidget {
       console.error("[RadioRías] Error conectando al servidor:", error)
       // Usar URL de respaldo de la configuración o por defecto
       const config = window.RadioRiasConfig || {}
-      this.streamUrl = config.stream?.fallback || "http://88.150.230.110:8950/stream"
+      this.streamUrl = config.stream?.fallback || "https://ec7.yesstreaming.net:2325/stream"
       this.updateStatus("Usando servidor de respaldo...")
       return true
     }
@@ -581,7 +598,7 @@ class FloatingRadioWidget {
   async fetchNowPlaying() {
     try {
       const config = window.RadioRiasConfig || {}
-      const apiUrl = config.metadata?.apiUrl || "http://88.150.230.110:8950/status-json.xsl"
+      const apiUrl = config.metadata?.apiUrl || "https://ec7.yesstreaming.net:2325/status-json.xsl"
       
       const response = await fetch(apiUrl)
       

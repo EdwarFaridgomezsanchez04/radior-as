@@ -1,19 +1,17 @@
 <?php
 /**
  * Configuración de Favicon para RadioRías
- * Favicon redondeado con diseño de radio
+ * Favicon circular con diseño de radio
  */
+
+// Detectar ruta base
+$base_path = (strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? '../' : '';
 ?>
 
-<!-- Favicon completo para todos los navegadores -->
-<link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16x16.png">
-<link rel="manifest" href="site.webmanifest">
+<!-- Favicon circular para todos los navegadores -->
+<link rel="icon" type="image/png" href="<?php echo $base_path; ?>assets/images/logo.png">
+<link rel="shortcut icon" href="<?php echo $base_path; ?>assets/images/logo.png">
 
-<!-- Meta tags adicionales para mejor compatibilidad -->
-<meta name="theme-color" content="#14b8a6">
-<meta name="msapplication-TileColor" content="#14b8a6">
-<meta name="msapplication-TileImage" content="assets/images/mstile-144x144.png">
+<!-- Meta tags para diferentes dispositivos -->
+<meta name="theme-color" content="#00CED1">
+<meta name="msapplication-TileColor" content="#00CED1">

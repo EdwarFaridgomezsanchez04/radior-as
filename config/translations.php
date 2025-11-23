@@ -8,6 +8,7 @@ $translations = [
             'podcasts' => 'Podcasts',
             'audiobooks' => 'Audiolibros',
             'contact' => 'Contacto',
+            'noticias' => 'Noticias',
             'admin' => 'Administración'
         ],
         'home' => [
@@ -120,6 +121,7 @@ $translations = [
             'podcasts' => 'Podcasts',
             'audiobooks' => 'Audiolibros',
             'contact' => 'Contacto',
+            'noticias' => 'Noticias',
             'admin' => 'Administración'
         ],
         'home' => [

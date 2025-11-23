@@ -235,7 +235,7 @@
     </div>
 </section>
 
-<!-- Statistics Section - COMENTADA
+<!-- Statistics Section -->
 <section id="estadisticas" class="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-white to-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12 sm:mb-16 lg:mb-20">
@@ -248,16 +248,16 @@
             </p>
         </div>
         
-        <!-- <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            <!-- <div class="group text-center p-6 sm:p-8 bg-white rounded-2xl sm:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            <div class="group text-center p-6 sm:p-8 bg-white rounded-2xl sm:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
                 <div class="w-20 sm:w-24 h-20 sm:h-24 bg-gradient-to-br from-radio-teal to-radio-cyan rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <i class="fas fa-users text-white text-2xl sm:text-3xl"></i>
                 </div>
                 <div class="text-3xl sm:text-4xl font-black text-slate-800 mb-2">15,000+</div>
                 <div class="text-slate-600 font-bold text-sm sm:text-base"><?php echo $t['about']['stats_listeners']; ?></div>
-            </div> -->
+            </div>
 
-            <!-- <div class="group text-center p-6 sm:p-8 bg-white rounded-2xl sm:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
+            <div class="group text-center p-6 sm:p-8 bg-white rounded-2xl sm:rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2">
                 <div class="w-20 sm:w-24 h-20 sm:h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <i class="fas fa-headphones text-white text-2xl sm:text-3xl"></i>
                 </div>
@@ -282,7 +282,7 @@
             </div>
         </div>
     </div>
-</section>  -->
+</section>
 
 <!-- Team Section -->
 <section id="equipo" class="py-12 sm:py-16 lg:py-24 bg-gradient-to-br from-slate-50 via-teal-50 to-cyan-50">

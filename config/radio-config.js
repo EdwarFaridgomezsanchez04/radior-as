@@ -2,11 +2,11 @@
 window.RadioRiasConfig = {
   // Configuración del stream
   stream: {
-    // URL principal usando proxy PHP (evita CORS)
-    primary: "proxy.php",
+    // URL principal del stream
+    primary: "https://ec7.yesstreaming.net:2325/stream",
     
-    // URL de respaldo directo (puede tener CORS)
-    fallback: "http://88.150.230.110:8950/stream",
+    // URL de respaldo directo
+    fallback: "https://ec7.yesstreaming.net:2325/stream",
     
     // Formato del stream
     format: "mp3",
@@ -18,7 +18,7 @@ window.RadioRiasConfig = {
   // Configuración de metadatos para Icecast
   metadata: {
     // URL para obtener metadatos de Icecast (formato JSON)
-    apiUrl: "http://88.150.230.110:8950/status-json.xsl",
+    apiUrl: "https://ec7.yesstreaming.net:2325/status-json.xsl",
     
     // Intervalo de actualización en milisegundos (15 segundos para Icecast)
     updateInterval: 15000,

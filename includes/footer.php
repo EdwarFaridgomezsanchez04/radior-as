@@ -38,5 +38,5 @@
     </div>
 </footer>
 
-<!-- Widget Flotante JavaScript - Versión Dual Buffer Anti-Cortes -->
-<script src="js/dual-buffer-widget.js?v=<?php echo time(); ?>"></script>
+<!-- Widget Flotante JavaScript -->
+<script src="js/floating-radio-widget.js?v=<?php echo time(); ?>"></script>

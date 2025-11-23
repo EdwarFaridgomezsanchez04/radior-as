@@ -6,7 +6,7 @@ class SimpleRadioWidget {
   constructor() {
     this.isPlaying = false
     this.audio = null
-    this.streamUrl = "proxy.php"
+    this.streamUrl = "https://ec7.yesstreaming.net:2325/stream"
     this.volume = 50
     this.isVisible = false
     
@@ -250,51 +250,24 @@ class SimpleRadioWidget {
     this.audio.volume = this.volume / 100
     this.audio.preload = "none"
     
-    // Eventos de audio optimizados para detección de problemas
+    // Eventos básicos de audio
     this.audio.addEventListener('loadstart', () => {
-      this.updateStatus("Conectando...")
-      this.setLoadingState(true)
-      this.lastProgressTime = Date.now()
       console.log("[RadioRías] Iniciando carga del stream")
     })
     
     this.audio.addEventListener('canplay', () => {
-      this.updateStatus("Listo")
-      this.setLoadingState(false)
-      this.lastProgressTime = Date.now()
-      this.reconnectAttempts = 0 // Reset en éxito
+      console.log("[RadioRías] Stream listo para reproducir")
     })
     
     this.audio.addEventListener('playing', () => {
       this.updateStatus("Reproduciendo")
-      this.setLoadingState(false)
-      this.lastProgressTime = Date.now()
       console.log("[RadioRías] Stream reproduciéndose correctamente")
     })
     
-    this.audio.addEventListener('progress', () => {
-      this.lastProgressTime = Date.now()
-      // Stream recibiendo datos correctamente
-    })
-    
-    this.audio.addEventListener('timeupdate', () => {
-      this.lastProgressTime = Date.now()
-      // Audio progresando normalmente
-    })
-    
     this.audio.addEventListener('pause', () => {
-      if (this.isPlaying) {
-        // Pausa inesperada - posible problema de conexión
-        console.warn("[RadioRías] Pausa inesperada detectada")
-        this.handleUnexpectedPause()
-      } else {
+      if (!this.isPlaying) {
         this.updateStatus("Pausado")
       }
-    })
-    
-    this.audio.addEventListener('stalled', () => {
-      console.warn("[RadioRías] Stream atascado - reconectando...")
-      this.handleStreamStall()
     })
     
     this.audio.addEventListener('waiting', () => {
@@ -306,10 +279,10 @@ class SimpleRadioWidget {
       console.error("[RadioRías] Error de audio:", e)
       this.updateStatus("Error de conexión")
       this.setLoadingState(false)
-      this.handleStreamError()
+      this.isPlaying = false
+      this.updatePlayButton()
     })
 
-    document.body.appendChild(this.audio)
     console.log("[RadioRías] Audio inicializado")
   }
 
@@ -318,25 +291,76 @@ class SimpleRadioWidget {
     
     if (!this.isPlaying) {
       try {
-        this.audio.src = this.streamUrl
         this.setLoadingState(true)
         this.updateStatus("Conectando...")
         
+        // Configurar el stream
+        this.audio.src = this.streamUrl
+        this.audio.load() // Forzar la carga
+        
+        // Esperar a que esté listo para reproducir
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error("Timeout al cargar el stream"))
+          }, 5000) // 5 segundos timeout
+          
+          const onCanPlay = () => {
+            clearTimeout(timeout)
+            this.audio.removeEventListener('canplay', onCanPlay)
+            this.audio.removeEventListener('error', onError)
+            resolve()
+          }
+          
+          const onError = (e) => {
+            clearTimeout(timeout)
+            this.audio.removeEventListener('canplay', onCanPlay)
+            this.audio.removeEventListener('error', onError)
+            reject(e)
+          }
+          
+          this.audio.addEventListener('canplay', onCanPlay)
+          this.audio.addEventListener('error', onError)
+        })
+        
+        // Reproducir
         await this.audio.play()
         this.isPlaying = true
         this.updatePlayButton()
-        console.log("[RadioRías] Reproducción iniciada")
+        this.updateStatus("Reproduciendo")
+        this.setLoadingState(false)
+        console.log("[RadioRías] Reproducción iniciada exitosamente")
         
       } catch (error) {
         console.error("[RadioRías] Error al reproducir:", error)
-        this.updateStatus("Error al reproducir")
-        this.setLoadingState(false)
+        
+        // Intentar método alternativo más simple
+        try {
+          console.log("[RadioRías] Intentando método alternativo...")
+          this.updateStatus("Reintentando...")
+          
+          this.audio.src = this.streamUrl
+          await this.audio.play()
+          
+          this.isPlaying = true
+          this.updatePlayButton()
+          this.updateStatus("Reproduciendo")
+          this.setLoadingState(false)
+          console.log("[RadioRías] Método alternativo exitoso")
+          
+        } catch (altError) {
+          console.error("[RadioRías] Error en método alternativo:", altError)
+          this.updateStatus("Error de conexión")
+          this.setLoadingState(false)
+          this.isPlaying = false
+          this.updatePlayButton()
+        }
       }
     } else {
       this.audio.pause()
       this.isPlaying = false
       this.updatePlayButton()
       this.updateStatus("Pausado")
+      this.setLoadingState(false)
       console.log("[RadioRías] Reproducción pausada")
     }
   }
@@ -522,10 +546,15 @@ class SimpleRadioWidget {
 }
 
 // Inicializar widget cuando el DOM esté listo
-document.addEventListener('DOMContentLoaded', () => {
-  console.log("[RadioRías] DOM cargado, creando widget simple...")
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log("[RadioRías] DOM cargado, creando widget simple...")
+    window.simpleRadioWidget = new SimpleRadioWidget()
+  })
+} else {
+  console.log("[RadioRías] DOM ya cargado, creando widget simple...")
   window.simpleRadioWidget = new SimpleRadioWidget()
-})
+}
 
 // Función global para mostrar el widget (llamada desde botones)
 function showSimpleRadioWidget() {
@@ -533,3 +562,16 @@ function showSimpleRadioWidget() {
     window.simpleRadioWidget.showWidget()
   }
 }
+
+// Función global para compatibilidad con botones existentes
+window.showRadioWidget = () => {
+  if (window.simpleRadioWidget) {
+    window.simpleRadioWidget.showWidget()
+    console.log('📻 Widget mostrado desde función global')
+  } else {
+    console.error('📻 Widget no está disponible')
+  }
+}
+
+// Alias para compatibilidad
+window.showDualBufferRadioWidget = window.showRadioWidget

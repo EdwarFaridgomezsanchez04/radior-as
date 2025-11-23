@@ -160,6 +160,44 @@ body {
     --hero-tint-to: rgba(30, 200, 199, 0.18);   /* #1EC8C7 with alpha */
 }
 
+/* Animación personalizada para el icono de radio */
+.radio-wave-animation {
+    animation: radioWave 2s ease-in-out infinite;
+}
+
+@keyframes radioWave {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    25% {
+        transform: scale(1.05) rotate(1deg);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.1) rotate(0deg);
+        opacity: 0.8;
+    }
+    75% {
+        transform: scale(1.05) rotate(-1deg);
+        opacity: 0.9;
+    }
+}
+
+/* Animación de pulsación suave para el círculo amarillo */
+.bg-yellow-300 {
+    animation: gentlePulse 3s ease-in-out infinite;
+}
+
+@keyframes gentlePulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 20px rgba(251, 191, 36, 0);
+    }
+}
+
 /* Background image layer (slider) */
 .hero-bg::before {
     content: '';

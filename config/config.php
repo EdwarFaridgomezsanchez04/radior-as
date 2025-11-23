@@ -4,7 +4,7 @@
 
 // Configuración de la base de datos (si se necesita en el futuro)
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'radio_rias');
+define('DB_NAME', 'radiomorrazo');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
@@ -17,7 +17,7 @@ define('SITE_PHONE', '+34 986 123 456');
 define('SITE_EMAIL', 'contacto@radiorias.com');
 
 // Configuración de streaming de radio
-define('RADIO_STREAM_URL', 'http://88.150.230.110:8950/stream');
+define('RADIO_STREAM_URL', 'https://ec7.yesstreaming.net:2325/stream');
 define('RADIO_PROXY_URL', 'proxy.php');
 
 // Configuración de redes sociales
@@ -60,6 +60,10 @@ define('SMTP_HOST', 'smtp.gmail.com');
 define('SMTP_PORT', 587);
 define('SMTP_USER', 'contacto@radiorias.com');
 define('SMTP_PASS', ''); // Configurar cuando sea necesario
+
+// Configuración de YouTube API
+define('YOUTUBE_API_KEY', 'AIzaSyCKAGjR1iit7bcu2D5qBUh0-tO0bscr-og');
+define('YOUTUBE_CHANNEL_ID', 'UCHLIFb1mo7Jf6yl2g2Gkbjg');
 
 // Configuración de cache
 define('CACHE_DIR', 'cache/');
